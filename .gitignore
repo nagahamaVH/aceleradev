@@ -5,6 +5,7 @@ venv
 .pytest_cache
 .vscode
 stdout.txt
+__init__.py
 
 data-science-0/output.xml
 data-science-0/test_main.py
