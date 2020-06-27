@@ -1,0 +1,13 @@
+__pycache__
+venv
+.ipynb_checkpoints
+.mypy_cache
+.pytest_cache
+.vscode
+stdout.txt
+
+data-science-0/output.xml
+data-science-0/test_main.py
+
+
+coestatistica-1/submission.json
