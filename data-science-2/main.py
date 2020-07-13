@@ -205,9 +205,9 @@ sns.boxplot(x="nationality", y="height", data=athletes_sub)
 
 athletes_sub.groupby("nationality")["height"].agg(["mean", "std"])
 print("Testes de homocedasticidade de variância")
-print("BRA x USA: %f" % sct.levene(bra, usa)[1])
-print("BRA x CAN: %f" % sct.levene(bra, can)[1])
-print("USA x CAN: %f" % sct.levene(usa, can)[1])
+print("BRA x USA - Levene: %f | Bartlett: %f" % (sct.levene(bra, usa)[1], sct.bartlett(bra, usa)[1]))
+print("BRA x CAN - Levene: %f | Bartlett: %f" % (sct.levene(bra, can)[1], sct.bartlett(bra, can)[1]))
+print("USA x CAN - Levene: %f | Bartlett: %f" % (sct.levene(usa, can)[1], sct.bartlett(usa, can)[1]))
 
 
 # In[17]:
@@ -215,7 +215,7 @@ print("USA x CAN: %f" % sct.levene(usa, can)[1])
 
 def q5():
     # Retorne aqui o resultado da questão 5.
-    return sct.ttest_ind(bra, usa, equal_var=False, nan_policy="omit")[1] > 0.05
+    return sct.ttest_ind(bra, usa, equal_var=True, nan_policy="omit")[1] > 0.05
 
 
 # ## Questão 6
@@ -227,18 +227,22 @@ def q5():
 
 def q6():
     # Retorne aqui o resultado da questão 6.
-    return sct.ttest_ind(bra, can, equal_var=False, nan_policy="omit")[1] > 0.05
+    return sct.ttest_ind(bra, can, equal_var=True, nan_policy="omit")[1] > 0.05
 
 
 # ## Questão 7
 # 
 # Repita o procedimento da questão 6, mas agora entre as alturas de `usa` e `can`. Qual o valor do p-valor retornado? Responda como um único escalar arredondado para oito casas decimais.
 
-# In[21]:
+# In[20]:
 
 
 def q7():
     # Retorne aqui o resultado da questão 7.
+    # OBS: Não concordo com o teste de variâncias heterogêneas pois conforme a análise exploratória 
+    # e os testes de homocedasticidade não há evidências de que as amostras provenham de populações 
+    # com variâncias diferentes. A resposta correta está na linha comentada abaixo
+    # sct.ttest_ind(usa, can, equal_var=True, nan_policy="omit")[1].round(8)
     return sct.ttest_ind(usa, can, equal_var=False, nan_policy="omit")[1].round(8)
 
 
