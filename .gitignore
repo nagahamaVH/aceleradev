@@ -9,6 +9,6 @@ __init__.py
 
 output.xml
 test_main.py
-
+.DS_Store
 
 coestatistica-1/submission.json
