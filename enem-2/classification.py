@@ -6,8 +6,7 @@ train = pd.read_csv("train.csv")
 test = pd.read_csv("test.csv")
 
 # Prepare data
-train, test = prep_data(train, test)
-x_train, x_validate, y_train, y_validate = split_train_validate(train)
+x_train, x_validate, x_test, y_train, y_validate = prep_pipe(train, test)
 
 # Train model
 # model = XXXXX

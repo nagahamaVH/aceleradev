@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+import xgboost as xgb
 from cleaning import *
 
 def clean_train_test(train, test):
@@ -49,7 +50,9 @@ def pre_process(x_train, x_test):
 
     scaler = StandardScaler()
     scaler.fit(x_all_quant)
-    x_all_std = pd.DataFrame(scaler.transform(x_all_quant), index=x_all_quant.index, columns=x_all_quant.columns)
+    x_all_std = pd.DataFrame(
+        scaler.transform(x_all_quant), index=x_all_quant.index, 
+        columns=x_all_quant.columns)
     x_all = update_columns(x_all, x_all_std)
 
     # Split again in train and test
@@ -67,7 +70,8 @@ def prep_pipe(train, x_test):
     y_train = train["MT_NAN"]
 
     # Imputation
-    nan_level_vars = ["TP_ENSINO", "Q027", "TP_DEPENDENCIA_ADM_ESC", "TP_STATUS_REDACAO"]
+    nan_level_vars = ["TP_ENSINO", "Q027", "TP_DEPENDENCIA_ADM_ESC", 
+                      "TP_STATUS_REDACAO"]
     x_train = create_nan_level(x_train, nan_level_vars)
     x_test = create_nan_level(x_test, nan_level_vars)
 
@@ -84,6 +88,19 @@ def prep_pipe(train, x_test):
     return x_train, x_validate, x_test, y_train, y_validate
 
 
+def train_model(x_train, x_validate, y_train, y_validate):
+    train = xgb.DMatrix(x_train, label=y_train)
+    validate = xgb.DMatrix(x_validate, label=y_validate)
+
+    # gbm = xgb.XGBClassifier()
+    # evaluation = [(x_train, y_train), (x_test, y_test)]
+
+    # gbm.fit(x_train, y_train, eval_set=evaluation, early_stopping_rounds=10, 
+    #     verbose=False)
+
+    pass
+
+
 def classificate(model, test):
     pass
 
@@ -91,4 +108,6 @@ def classificate(model, test):
 if __name__ == "__main__":
     train = pd.read_csv("train.csv")
     test = pd.read_csv("test.csv")
-    prep_pipe(train, test)
+
+    x_train, x_validate, x_test, y_train, y_validate = prep_pipe(train, test)
+    train_model(x_train, x_validate, y_train, y_validate)
