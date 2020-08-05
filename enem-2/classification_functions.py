@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import xgboost as xgb
+from sklearn.metrics import accuracy_score
 from cleaning import *
 
 def clean_train_test(train, test):
@@ -89,20 +90,19 @@ def prep_pipe(train, x_test):
 
 
 def train_model(x_train, x_validate, y_train, y_validate):
-    train = xgb.DMatrix(x_train, label=y_train)
-    validate = xgb.DMatrix(x_validate, label=y_validate)
+    params = {
+        "objective": "binary:logistic",
+        "max_depth": 5,
+        "n_estimators": 100}
 
-    # gbm = xgb.XGBClassifier()
-    # evaluation = [(x_train, y_train), (x_test, y_test)]
+    gbm = xgb.XGBClassifier(**params)
+    gbm.fit(x_train, y_train)
 
-    # gbm.fit(x_train, y_train, eval_set=evaluation, early_stopping_rounds=10, 
-    #     verbose=False)
+    y_pred = gbm.predict(x_validate)
 
-    pass
+    accuracy = accuracy_score(y_validate, y_pred)
 
-
-def classificate(model, test):
-    pass
+    return gbm, accuracy
 
 
 if __name__ == "__main__":
@@ -110,4 +110,7 @@ if __name__ == "__main__":
     test = pd.read_csv("test.csv")
 
     x_train, x_validate, x_test, y_train, y_validate = prep_pipe(train, test)
-    train_model(x_train, x_validate, y_train, y_validate)
+    model, accuracy = train_model(x_train, x_validate, y_train, y_validate)
+
+    print(accuracy)
+    nan_index = model.predict(x_test).astype(bool)
