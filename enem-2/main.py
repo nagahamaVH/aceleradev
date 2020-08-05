@@ -4,8 +4,8 @@ from classification import mt_nan_index
 #import regression
 
 # Read data
-train = pd.read_csv("train.csv")
-test = pd.read_csv("test.csv")
+train = pd.read_csv("data/train.csv")
+test = pd.read_csv("data/test.csv")
 
 # Prepare data
 train1, test1 = prep_data1(train, test)

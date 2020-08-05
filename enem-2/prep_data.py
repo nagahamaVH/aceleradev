@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from feature_engine.discretisers import DecisionTreeDiscretiser
 from sklearn.model_selection import train_test_split
-from cleaning import *
+from src.cleaning import *
 
 def prep_data1(train, test):
     # Select columns

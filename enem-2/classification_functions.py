@@ -3,7 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import xgboost as xgb
 from sklearn.metrics import accuracy_score
-from cleaning import *
+from src.cleaning import *
 
 def clean_train_test(train, test):
     train["MT_NAN"] = train["NU_NOTA_MT"].isna().astype(int)
@@ -106,8 +106,8 @@ def train_model(x_train, x_validate, y_train, y_validate):
 
 
 if __name__ == "__main__":
-    train = pd.read_csv("train.csv")
-    test = pd.read_csv("test.csv")
+    train = pd.read_csv("data/train.csv")
+    test = pd.read_csv("data/test.csv")
 
     x_train, x_validate, x_test, y_train, y_validate = prep_pipe(train, test)
     model, accuracy = train_model(x_train, x_validate, y_train, y_validate)
