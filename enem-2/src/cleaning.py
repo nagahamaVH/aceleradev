@@ -42,3 +42,10 @@ def concat_train_test(train, test):
     all_data = pd.concat([train, test])
 
     return n_train, n_test, all_data
+
+
+def split_x_y(data, response_var):
+    x = data.drop(response_var, axis=1)
+    y = data[response_var]
+
+    return x, y
