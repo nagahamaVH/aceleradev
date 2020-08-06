@@ -114,10 +114,10 @@ def predict_nan(train, test):
         acc_file.write(str(accuracy))
         acc_file.close()
 
-        print("File generated | Acc: %.4f" % accuracy)
+        print("Classification: File generated | Acc: %.4f" % accuracy)
     else:
         accuracy = float(open("data/accuracy.txt", "r").read())
-        print("File already exists | Acc: %.4f" % accuracy)
+        print("Classification: File already exists | Acc: %.4f" % accuracy)
     
     pass
 

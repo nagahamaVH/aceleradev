@@ -1,6 +1,6 @@
 import pandas as pd
 from classification import predict_nan
-from regression import reg_predict
+from regression import regression_pipe
 
 # Read data
 train = pd.read_csv("data/train.csv")
@@ -13,7 +13,7 @@ predict_nan(train, test)
 nan_data = pd.read_csv("data/test_mt_nan.csv")
 
 # --------------- 2) Regression model --------------------------------------
-pred_data = reg_predict(train, test)
+pred_data = regression_pipe(train, test)
 
 # --------------- Baseline -------------------------------------------------
 baseline = pd.read_csv("data/baseline.csv")
