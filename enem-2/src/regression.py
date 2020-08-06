@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import Lasso
+from sklearn.linear_model import Lasso, LassoCV
 from cleaning import *
 
 def clean_train_test(train, test):
@@ -84,10 +84,13 @@ def train_model(x_train, y_train):
 def reg_predict(train, test):
     x_train, x_test, y_train = prepare_data(train, test)
 
-    model = Lasso(alpha=0.55, tol=6.41e-07, max_iter=10000, random_state=230)
+    # model = Lasso(alpha=0.55, tol=6.41e-07, max_iter=10000, random_state=230)
+    model = LassoCV(cv=10, tol=6.41e-07, max_iter=10000, random_state=230)
     model.fit(x_train, y_train)
 
     y_pred = model.predict(x_test)
+
+    print(model.coef_)
 
     pred_data = pd.DataFrame({
     "NU_INSCRICAO": test["NU_INSCRICAO"].tolist(),
@@ -100,5 +103,3 @@ if __name__ == "__main__":
     test = pd.read_csv("data/test.csv")
 
     pred_data = reg_predict(train, test)
-
-    print(pred_data.head())
