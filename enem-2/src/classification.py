@@ -67,8 +67,8 @@ def prepare_data(train, x_test):
     x_train = create_nan_level(x_train, nan_level_vars)
     x_test = create_nan_level(x_test, nan_level_vars)
 
-    x_train = x_train.fillna(0)
-    x_test = x_test.fillna(0)
+    x_train = x_train.fillna(x_train.mean())
+    x_test = x_test.fillna(x_test.mean())
 
     # Pre-process
     x_train, x_test = pre_process(x_train, x_test)
@@ -109,9 +109,15 @@ def predict_nan(train, test):
             "mt_is_nan": nan_index})
         
         nan_data.to_csv("data/test_mt_nan.csv", index=False)
-        print("File generated")
+
+        acc_file = open("data/accuracy.txt", "w+")
+        acc_file.write(str(accuracy))
+        acc_file.close()
+
+        print("File generated | Acc: %.4f" % accuracy)
     else:
-        print("File already exists")
+        accuracy = float(open("data/accuracy.txt", "r").read())
+        print("File already exists | Acc: %.4f" % accuracy)
     
     pass
 

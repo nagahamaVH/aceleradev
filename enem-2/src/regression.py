@@ -1,5 +1,6 @@
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import Lasso, LassoCV
 from cleaning import *
 
@@ -53,7 +54,7 @@ def prep_process1(data):
 
 
 def prepare_data(train, x_test):
-    train, x_test = train, test = clean_train_test(train, x_test)
+    train, x_test = clean_train_test(train, x_test)
 
     # Remove outliers
     train = train[train["NU_NOTA_MT"] > 0]
@@ -75,12 +76,6 @@ def prepare_data(train, x_test):
     return x_train, x_test, y_train
 
 
-def train_model(x_train, y_train):
-    model = Lasso()
-    model.fit(x_train, y_train)
-    return model
-
-
 def reg_predict(train, test):
     x_train, x_test, y_train = prepare_data(train, test)
 
@@ -88,13 +83,16 @@ def reg_predict(train, test):
     model = LassoCV(cv=10, tol=6.41e-07, max_iter=10000, random_state=230)
     model.fit(x_train, y_train)
 
-    y_pred = model.predict(x_test)
+    y_fitted = model.predict(x_train)
+    rmse = mean_squared_error(y_train, y_fitted, squared=False)
 
-    print(model.coef_)
+    y_pred = model.predict(x_test)
 
     pred_data = pd.DataFrame({
     "NU_INSCRICAO": test["NU_INSCRICAO"].tolist(),
     "NU_NOTA_MT": y_pred})
+
+    print("RMSE train: %.4f" % rmse)
 
     return pred_data
 
