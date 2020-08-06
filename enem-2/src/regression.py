@@ -50,7 +50,7 @@ def prep_process1(data):
 
     data_quant = pd.concat([data_quant, data_quant2, data_quant3], axis=1)
 
-    scaler = RobustScaler()
+    scaler = StandardScaler()
     scaler.fit(data_quant)
     data_std = pd.DataFrame(
         scaler.transform(data_quant), index=data_quant.index, 
@@ -144,9 +144,9 @@ def regression_pipe(train, test, do_bc=False):
 
     features_data = importance_features(model, x_train)
 
-    # x_train, x_test = feature_selection(features_data, x_train, x_test)
+    x_train, x_test = feature_selection(features_data, x_train, x_test)
 
-    # model, _ = train_model(x_train, y_train, x_test)
+    model, _ = train_model(x_train, y_train, x_test)
 
     x_test.index = test["NU_INSCRICAO"]
 
