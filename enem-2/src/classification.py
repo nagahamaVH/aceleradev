@@ -104,7 +104,9 @@ def predict_nan(train, test):
 
         nan_index = model.predict(x_test).astype(bool)
 
-        nan_data = pd.DataFrame({"mt_is_nan": nan_index})
+        nan_data = pd.DataFrame({
+            "NU_INSCRICAO": test["NU_INSCRICAO"].tolist(),
+            "mt_is_nan": nan_index})
         
         nan_data.to_csv("data/test_mt_nan.csv", index=False)
         print("File generated")

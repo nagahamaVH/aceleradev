@@ -22,7 +22,7 @@ def prep_process1(data):
     nan_level_vars = ["TP_ENSINO", "Q027", "TP_DEPENDENCIA_ADM_ESC", "TP_STATUS_REDACAO"]
     data = create_nan_level(data, nan_level_vars)
 
-    data = data.fillna(0)     # TEST MEDIAN
+    data = data.fillna(data.median())
 
     # Change to string to dummify
     columns_to_str_type = [
@@ -81,14 +81,24 @@ def train_model(x_train, y_train):
     return model
 
 
+def reg_predict(train, test):
+    x_train, x_test, y_train = prepare_data(train, test)
+
+    model = Lasso(alpha=0.55, tol=6.41e-07, max_iter=10000, random_state=230)
+    model.fit(x_train, y_train)
+
+    y_pred = model.predict(x_test)
+
+    pred_data = pd.DataFrame({
+    "NU_INSCRICAO": test["NU_INSCRICAO"].tolist(),
+    "NU_NOTA_MT": y_pred})
+
+    return pred_data
+
 if __name__ == "__main__":
     train = pd.read_csv("data/train.csv")
     test = pd.read_csv("data/test.csv")
 
-    x_train, x_test, y_train = prepare_data(train, test)
+    pred_data = reg_predict(train, test)
 
-    model = Lasso()
-    model.fit(x_train, y_train)
-
-    y_pred = model.predict(x_test)
-    print(y_pred)
+    print(pred_data.head())
