@@ -32,3 +32,13 @@ def change_columns_type(data, columns, type):
         data[col] = data[col].astype(type)
     
     return data
+
+
+def concat_train_test(train, test):
+    n_train = train.shape[0]
+    n_test = test.shape[0]
+
+    # Bind covariables to pre-process
+    all_data = pd.concat([train, test])
+
+    return n_train, n_test, all_data

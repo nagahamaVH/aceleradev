@@ -3,7 +3,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import xgboost as xgb
 from sklearn.metrics import accuracy_score
-from src.cleaning import *
+import os
+from cleaning import *
 
 def clean_train_test(train, test):
     train["MT_NAN"] = train["NU_NOTA_MT"].isna().astype(int)
@@ -15,16 +16,6 @@ def clean_train_test(train, test):
     test = test[intersect_columns].drop(uninformative_columns, axis=1)
 
     return train, test
-
-
-def concat_train_test(train, test):
-    n_train = train.shape[0]
-    n_test = test.shape[0]
-
-    # Bind covariables to pre-process
-    all_data = pd.concat([train, test])
-
-    return n_train, n_test, all_data
 
 
 def pre_process(x_train, x_test):
@@ -63,7 +54,7 @@ def pre_process(x_train, x_test):
     return x_train, x_test
 
 
-def prep_pipe(train, x_test):
+def prepare_data(train, x_test):
     train, x_test = clean_train_test(train, x_test)
 
     # Split train
@@ -105,12 +96,26 @@ def train_model(x_train, x_validate, y_train, y_validate):
     return gbm, accuracy
 
 
+def predict_nan(train, test):
+    if not os.path.exists("data/test_mt_nan.csv"):
+        x_train, x_validate, x_test, y_train, y_validate = prepare_data(train, test)
+
+        model, accuracy = train_model(x_train, x_validate, y_train, y_validate)
+
+        nan_index = model.predict(x_test).astype(bool)
+
+        nan_data = pd.DataFrame({"mt_is_nan": nan_index})
+        
+        nan_data.to_csv("data/test_mt_nan.csv", index=False)
+        print("File generated")
+    else:
+        print("File already exists")
+    
+    pass
+
+
 if __name__ == "__main__":
     train = pd.read_csv("data/train.csv")
     test = pd.read_csv("data/test.csv")
 
-    x_train, x_validate, x_test, y_train, y_validate = prep_pipe(train, test)
-    model, accuracy = train_model(x_train, x_validate, y_train, y_validate)
-
-    print(accuracy)
-    nan_index = model.predict(x_test).astype(bool)
+    predict_nan(train, test)
