@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler, RobustScaler
+from sklearn.preprocessing import StandardScaler, RobustScaler, PolynomialFeatures
 from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import Lasso, LassoCV
 from scipy.stats import boxcox
@@ -45,12 +45,17 @@ def prep_process1(data):
         "NU_NOTA_CH", "NU_IDADE"]
     data_quant = data[quantitative_columns]
 
+    data_quant2 = np.power(data_quant, 2).add_suffix("_2")
+    data_quant3 = np.power(data_quant, 3).add_suffix("_3")
+
+    data_quant = pd.concat([data_quant, data_quant2, data_quant3], axis=1)
+
     scaler = RobustScaler()
     scaler.fit(data_quant)
     data_std = pd.DataFrame(
         scaler.transform(data_quant), index=data_quant.index, 
         columns=data_quant.columns)
-    data = update_columns(data, data_std)
+    data = upsert_columns(data, data_std)
 
     return data
 
@@ -129,7 +134,7 @@ def reverse_bc(z, lambda_bc):
         return (lambda_bc * z + 1) ** (1 / lambda_bc)
 
 
-def regression_pipe(train, test, do_bc=True):
+def regression_pipe(train, test, do_bc=False):
     x_train, y_train, x_test = prepare_data(train, test)
 
     if do_bc:
@@ -138,8 +143,6 @@ def regression_pipe(train, test, do_bc=True):
     model, _ = train_model(x_train, y_train, x_test)
 
     features_data = importance_features(model, x_train)
-
-    print(features_data.head(10))
 
     # x_train, x_test = feature_selection(features_data, x_train, x_test)
 

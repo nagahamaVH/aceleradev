@@ -49,3 +49,14 @@ def split_x_y(data, response_var):
     y = data[response_var]
 
     return x, y
+
+def upsert_columns(old_data, new_data):
+    columns = new_data.columns.tolist()
+
+    intersect = get_intersect_columns(old_data, new_data)
+
+    old_data.drop(intersect, axis=1, inplace=True)
+
+    updated = pd.concat([old_data, new_data], axis=1)
+
+    return updated
