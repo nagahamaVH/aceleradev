@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler, RobustScaler, PolynomialFeatures
 from sklearn.metrics import mean_squared_error
-from sklearn.linear_model import Lasso, LassoCV
+from sklearn.linear_model import LassoCV
 from scipy.stats import boxcox
 from cleaning import *
 
@@ -47,8 +47,15 @@ def prep_process1(data):
 
     data_quant2 = np.power(data_quant, 2).add_suffix("_2")
     data_quant3 = np.power(data_quant, 3).add_suffix("_3")
+    data_quant05 = np.power(data_quant, 1/2).add_suffix("_05")
+    data_quant03 = np.power(data_quant, 1/3).add_suffix("_03")
+    data_quant_log = np.log(data_quant + 1).add_suffix("_log")
+    data_quant_inv = 1 / (data_quant + 1).add_suffix("_inv")
+    data_quant_inv2 = 1 / np.power(data_quant + 1, 2).add_suffix("_inv2")
 
-    data_quant = pd.concat([data_quant, data_quant2, data_quant3], axis=1)
+    data_quant = pd.concat([
+        data_quant, data_quant2, data_quant3, data_quant05, data_quant03, 
+        data_quant_log, data_quant_inv, data_quant_inv2], axis=1)
 
     scaler = StandardScaler()
     scaler.fit(data_quant)
@@ -84,16 +91,15 @@ def prepare_data(train, x_test):
 
 
 def train_model(x_train, y_train, x_test):
-    # model = Lasso(alpha=0.55, tol=6.41e-07, max_iter=10000, random_state=230)
     model = LassoCV(cv=10, max_iter=10000, random_state=230)
     model.fit(x_train, y_train)
-
+    
     y_fitted = model.predict(x_train)
     rmse = mean_squared_error(y_train, y_fitted, squared=False)
 
     print("Regression: RMSE train: %.4f" % rmse)
 
-    return model, rmse
+    return model
 
 
 def reg_predict(model, x_test):
@@ -140,13 +146,14 @@ def regression_pipe(train, test, do_bc=False):
     if do_bc:
        y_train, lambda_bc = boxcox(y_train)
     
-    model, _ = train_model(x_train, y_train, x_test)
+    model = train_model(x_train, y_train, x_test)
 
+    # Feature selection
     features_data = importance_features(model, x_train)
 
     x_train, x_test = feature_selection(features_data, x_train, x_test)
 
-    model, _ = train_model(x_train, y_train, x_test)
+    model = train_model(x_train, y_train, x_test)
 
     x_test.index = test["NU_INSCRICAO"]
 

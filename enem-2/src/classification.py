@@ -86,7 +86,7 @@ def train_model(x_train, x_validate, y_train, y_validate):
         "max_depth": 5,
         "n_estimators": 100}
 
-    gbm = xgb.XGBClassifier(**params)
+    gbm = xgb.XGBClassifier(**params, random_state=423)
     gbm.fit(x_train, y_train)
 
     y_pred = gbm.predict(x_validate)
@@ -97,7 +97,11 @@ def train_model(x_train, x_validate, y_train, y_validate):
 
 
 def predict_nan(train, test):
-    if not os.path.exists("data/test_mt_nan.csv"):
+    if (os.path.exists("data/test_mt_nan.csv")) & (os.path.exists("data/accuracy.txt")):
+        accuracy = float(open("data/accuracy.txt", "r").read())
+
+        print("Classification: File already exists | Acc: %.4f" % accuracy)
+    else:
         x_train, x_validate, x_test, y_train, y_validate = prepare_data(train, test)
 
         model, accuracy = train_model(x_train, x_validate, y_train, y_validate)
@@ -115,9 +119,6 @@ def predict_nan(train, test):
         acc_file.close()
 
         print("Classification: File generated | Acc: %.4f" % accuracy)
-    else:
-        accuracy = float(open("data/accuracy.txt", "r").read())
-        print("Classification: File already exists | Acc: %.4f" % accuracy)
     
     pass
 
